@@ -1,6 +1,8 @@
 import random
 import math
 import pr1testing
+import myStrat1 
+import strat2
 random.seed()
 
 # CSCI 121 Fall 2017
@@ -90,27 +92,101 @@ def play():
         print("Tie.")
         return 3
 
+def rollMany(n):
+    total = 0
+    for x in range(0, n):
+        total += roll()
+    return total
+
 def autoplayLoud(strat1, strat2):
-    #your code here
-    return ___
+    gameOver = False
+    score = {}
+    score[1] = 0
+    score[2] = 0
+    whoseTurn = 1
+    isLast = False
+    while gameOver != True:
+        # print('it\'s player ', whoseTurn, '\'s turn. their score is ', score[whoseTurn]) 
+        dieCount = None
+        thisTotal = None
+        if whoseTurn == 1:
+            dieCount = strat1(score[1], score[2], isLast)
+            thisTotal = rollMany(dieCount)
+            score[1] += thisTotal
+            print('player ', whoseTurn, ' rolled ', dieCount, ' die and scored ', thisTotal, ' points. scores: ', score)
+            whoseTurn = 2
+        else:
+            dieCount = int(strat2(score[2], score[1], isLast))
+            thisTotal = rollMany(dieCount)
+            score[2] += thisTotal
+            print('player ', whoseTurn, ' rolled ', dieCount, ' die and scored ', thisTotal, ' points. scores: ', score)
+            whoseTurn = 1
+        if score[1] > 100:
+            print('player 1 overshot!')
+            gameOver = True
+        elif score[2] > 100:
+            print('player 2 overshot!')
+            gameOver = True
+        elif isLast == True:
+            print('all turns up.')
+            gameOver = True
+        if dieCount == 0:
+            print('player ', whoseTurn, ' passed.')
+            isLast = True
+    print('final scores: player 1: ', score[1], ' player 2: ', score[2])
+    return score 
 
 def autoplay(strat1, strat2):
-    #your code here
-    return ___
+    gameOver = False
+    score = {}
+    score[1] = 0
+    score[2] = 0
+    whoseTurn = 1
+    isLast = False
+    while gameOver != True:
+        # print('it\'s player ', whoseTurn, '\'s turn. their score is ', score[whoseTurn]) 
+        dieCount = None
+        thisTotal = None
+        if whoseTurn == 1:
+            dieCount = strat1(score[1], score[2], isLast)
+            thisTotal = rollMany(dieCount)
+            score[1] += thisTotal
+            whoseTurn = 2
+        else:
+            dieCount = int(strat2(score[2], score[1], isLast))
+            thisTotal = rollMany(dieCount)
+            score[2] += thisTotal
+            whoseTurn = 1
+        if score[1] > 100 or score[2] > 100 or isLast == True:
+            gameOver = True
+        if dieCount == 0:
+            isLast = True
+    return score
 
 def manyGames(strat1, strat2, n):
-    #your code here
-    return ___
+    victories = {}
+    victories[1] = 0
+    victories[2] = 0
+    for x in range(0, n):
+        thisScores = autoplayLoud(strat1, strat2)
+        if thisScores[1] > thisScores[2]:
+            victories[1] += 1
+        else:
+            victories[2] += 1
+    print(victories)
+    return victories
 
 def sample1(myscore, theirscore, last):
+    if myscore == 0:
+        return 28
     if myscore > theirscore:
         return 0
     else:
        return 12
 
 def sample2(myscore, theirscore, last):
-    #your code here
-    return ___
+    #blah blah blah
+    return __
 
 def improve(strat):
 
@@ -125,3 +201,5 @@ def myStrategy(myscore, theirscore, last):
     #your code here
     return ___
 
+manyGames(strat2.create(False), pr1testing.test7, 1)
+# pr1testing.testStrat(strat2.create(True), 2)
