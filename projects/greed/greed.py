@@ -1,7 +1,8 @@
+# from scipy.stats import norm
 import pr1testing
-import myStrat1 
-import strat2_mutatable
-import strat2
+# import myStrat1 
+# import strat2_mutatable
+# import strat2
 
 # CSCI 121 Fall 2017
 # 
@@ -224,6 +225,7 @@ def strategy1(risk, verbose):
             mean = dieMean * check
             deviation = numpy.sqrt(dieVariance * check)
             zScore = (remainingScore - mean) / deviation
+            # uses scipy.stats.norm to calculate probability from z score
             overshootOdds = norm.sf(zScore)
             print('checked: ', check, ' overshoot prob: ', overshootOdds, zScore) if verbose == True else None
             if overshootOdds < currentRisk:
