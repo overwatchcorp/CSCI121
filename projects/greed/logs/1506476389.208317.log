@@ -1,0 +1,34 @@
+DEBUG:root:{'score': 0}
+DEBUG:root:{'score': 0}
+DEBUG:root:{'score': 0}
+DEBUG:root:{'score': 0}
+DEBUG:root:{'score': 2103, 'highThresh': 0, 'highProb': 0.5, 'normProb': 0.5}
+DEBUG:root:{'score': 2166, 'highThresh': 75, 'highProb': 0.5, 'normProb': 0.5}
+DEBUG:root:{'score': 2204, 'highThresh': 0, 'highProb': 0.5, 'normProb': 0.51}
+DEBUG:root:{'score': 2198, 'highThresh': 50, 'highProb': 0.5, 'normProb': 0.5}
+DEBUG:root:{'score': 2217, 'highThresh': 25, 'highProb': 0.5, 'normProb': 0.5}
+DEBUG:root:{'score': 2206, 'highThresh': 0, 'highProb': 0.5, 'normProb': 0.52}
+DEBUG:root:{'score': 2207, 'highThresh': 50, 'highProb': 0.5, 'normProb': 0.52}
+DEBUG:root:{'score': 2291, 'highThresh': 25, 'highProb': 0.5, 'normProb': 0.52}
+DEBUG:root:{'score': 2228, 'highThresh': 75, 'highProb': 0.5, 'normProb': 0.51}
+DEBUG:root:{'score': 2261, 'highThresh': 50, 'highProb': 0.5, 'normProb': 0.53}
+DEBUG:root:{'score': 2397, 'highThresh': 0, 'highProb': 0.5, 'normProb': 0.53}
+DEBUG:root:{'score': 2287, 'highThresh': 75, 'highProb': 0.5, 'normProb': 0.54}
+DEBUG:root:{'score': 2425, 'highThresh': 0, 'highProb': 0.5, 'normProb': 0.54}
+DEBUG:root:{'score': 2353, 'highThresh': 25, 'highProb': 0.5, 'normProb': 0.53}
+DEBUG:root:{'score': 2317, 'highThresh': 75, 'highProb': 0.5, 'normProb': 0.55}
+DEBUG:root:{'score': 2373, 'highThresh': 50, 'highProb': 0.5, 'normProb': 0.54}
+DEBUG:root:{'score': 2541, 'highThresh': 0, 'highProb': 0.5, 'normProb': 0.55}
+DEBUG:root:{'score': 2380, 'highThresh': 25, 'highProb': 0.5, 'normProb': 0.55}
+DEBUG:root:{'score': 2356, 'highThresh': 75, 'highProb': 0.5, 'normProb': 0.56}
+DEBUG:root:{'score': 2609, 'highThresh': 0, 'highProb': 0.5, 'normProb': 0.56}
+DEBUG:root:{'score': 2563, 'highThresh': 25, 'highProb': 0.5, 'normProb': 0.56}
+DEBUG:root:{'score': 2454, 'highThresh': 75, 'highProb': 0.5, 'normProb': 0.57}
+DEBUG:root:{'score': 2571, 'highThresh': 50, 'highProb': 0.5, 'normProb': 0.56}
+DEBUG:root:{'score': 2664, 'highThresh': 0, 'highProb': 0.5, 'normProb': 0.57}
+DEBUG:root:{'score': 2617, 'highThresh': 25, 'highProb': 0.5, 'normProb': 0.57}
+DEBUG:root:{'score': 2617, 'highThresh': 50, 'highProb': 0.5, 'normProb': 0.58}
+DEBUG:root:{'score': 2663, 'highThresh': 25, 'highProb': 0.5, 'normProb': 0.58}
+DEBUG:root:{'score': 2854, 'highThresh': 0, 'highProb': 0.5, 'normProb': 0.58}
+DEBUG:root:{'score': 2521, 'highThresh': 75, 'highProb': 0.5, 'normProb': 0.58}
+DEBUG:root:{'score': 2665, 'highThresh': 50, 'highProb': 0.5, 'normProb': 0.59}

@@ -2,7 +2,7 @@ import random
 import math
 import pr1testing
 import myStrat1 
-import strat2
+import strat2_mutatable
 random.seed()
 
 # CSCI 121 Fall 2017
@@ -93,10 +93,15 @@ def play():
         return 3
 
 def rollMany(n):
-    total = 0
-    for x in range(0, n):
-        total += roll()
-    return total
+    diceTotal = 0
+    diceString = ""
+    i = n
+    while i > 0:
+        d = roll()
+        diceTotal += d
+        diceString = diceString + " " + str(d)
+        i = i-1
+    return diceTotal
 
 def autoplayLoud(strat1, strat2):
     gameOver = False
@@ -109,18 +114,16 @@ def autoplayLoud(strat1, strat2):
         # print('it\'s player ', whoseTurn, '\'s turn. their score is ', score[whoseTurn]) 
         dieCount = None
         thisTotal = None
-        if whoseTurn == 1:
-            dieCount = strat1(score[1], score[2], isLast)
-            thisTotal = rollMany(dieCount)
-            score[1] += thisTotal
-            print('player ', whoseTurn, ' rolled ', dieCount, ' die and scored ', thisTotal, ' points. scores: ', score)
-            whoseTurn = 2
-        else:
-            dieCount = int(strat2(score[2], score[1], isLast))
-            thisTotal = rollMany(dieCount)
-            score[2] += thisTotal
-            print('player ', whoseTurn, ' rolled ', dieCount, ' die and scored ', thisTotal, ' points. scores: ', score)
-            whoseTurn = 1
+        dieCount = strat1(score[1], score[2], isLast)
+        thisTotal = rollMany(dieCount)
+        score[1] += thisTotal
+        print('player ', whoseTurn, ' rolled ', dieCount, ' die and scored ', thisTotal, ' points. scores: ', score)
+        whoseTurn = 2
+        dieCount = int(strat2(score[2], score[1], isLast))
+        thisTotal = rollMany(dieCount)
+        score[2] += thisTotal
+        print('player ', whoseTurn, ' rolled ', dieCount, ' die and scored ', thisTotal, ' points. scores: ', score)
+        whoseTurn = 1
         if score[1] > 100:
             print('player 1 overshot!')
             gameOver = True
@@ -144,20 +147,19 @@ def autoplay(strat1, strat2):
     whoseTurn = 1
     isLast = False
     while gameOver != True:
-        # print('it\'s player ', whoseTurn, '\'s turn. their score is ', score[whoseTurn]) 
         dieCount = None
         thisTotal = None
-        if whoseTurn == 1:
-            dieCount = strat1(score[1], score[2], isLast)
-            thisTotal = rollMany(dieCount)
-            score[1] += thisTotal
-            whoseTurn = 2
-        else:
-            dieCount = int(strat2(score[2], score[1], isLast))
-            thisTotal = rollMany(dieCount)
-            score[2] += thisTotal
-            whoseTurn = 1
+        dieCount = strat1(score[1], score[2], isLast)
+        thisTotal = rollMany(dieCount)
+        score[1] += thisTotal
+
+        dieCount = None
+        thisTotal = None
+        dieCount = int(strat2(score[2], score[1], isLast))
+        thisTotal = rollMany(dieCount)
+        score[2] += thisTotal
         if score[1] > 100 or score[2] > 100 or isLast == True:
+            break
             gameOver = True
         if dieCount == 0:
             isLast = True
@@ -167,39 +169,81 @@ def manyGames(strat1, strat2, n):
     victories = {}
     victories[1] = 0
     victories[2] = 0
+    victories[3] = 0
     for x in range(0, n):
-        thisScores = autoplayLoud(strat1, strat2)
-        if thisScores[1] > thisScores[2]:
-            victories[1] += 1
-        else:
+        thisScores = autoplay(strat1, strat2)
+        if thisScores[1] > 100:
             victories[2] += 1
-    print(victories)
+        elif thisScores[2] > 100:
+            victories[1] += 1
+        elif thisScores[1] > thisScores[2]:
+            victories[1] += 1
+        elif thisScores[2] > thisScores[1]:
+            victories[2] += 1
+        else:
+            victories[3] += 1
+    # print(victories)
+    if victories[1] > victories[2]:
+        print('player 1 win')
+    # elif victories[1] == victories[2]:
+        # print('tie')
+    # else:
+        # print('player 2 win')
     return victories
 
-def sample1(myscore, theirscore, last):
-    if myscore == 0:
-        return 28
-    if myscore > theirscore:
-        return 0
-    else:
-       return 12
+# lastProb = 0
+# lastAction = 'add'
+# highThresh = 0
+# highProb = 0.0
+# normProb = 0.8
+# prevResults = manyGames(strat2_mutatable.create(highThresh, highProb, normProb), pr1testing.test11, 1000)
+# highest = 0
+# while True:
+#     for x in range(1, 95):
+#         for y in range(1, 100):
+#             highThresh = x
+#             highProb = y / 100
+#             results = manyGames(strat2_mutatable.create(highThresh, highProb, normProb), pr1testing.test11, 1000)
+# 
+#             if results[1] > highest:
+#                 print(results[1], highThresh, highProb, normProb)
+#                 highest = results[1]
+#             if results[1] > results[2]:
+#                 print('BAMMM', highThresh, highProb, normProb)
+#                 break
+#         print('completed ', x, ' numerspace')
+# 
+import multiprocessing
+from multiprocessing import Pool
+import logging
+import time
 
-def sample2(myscore, theirscore, last):
-    #blah blah blah
-    return __
+threads = multiprocessing.cpu_count()
 
-def improve(strat):
+logging.basicConfig(filename= 'logs/' + str(time.time()) + '.log',level=logging.DEBUG)
 
-    def new_strat(myscore, theirscore, last):
-        #your code for 'new_strat' here, improving
-        #the move of 'strat'
-        return ___
+def mutateToTenths(count):
+    start = int((100 / threads) * (count - 1))
+    stop = int((100 / threads) * count)
+    highest = {}
+    highest['score'] = 0
+    for x in range(start, stop):
+        for y in range(50, 90):
+            for z in range(50, 90):
+                highThresh = x
+                highProb = y / 100
+                normProb = z / 100
+                results = manyGames(strat2_mutatable.create(highThresh, highProb, normProb), pr1testing.test11, 10000)
+                if results[1] > highest['score']:
+                    logging.debug(highest)
+                    highest['score'] = results[1]
+                    highest['highThresh'] = highThresh
+                    highest['highProb'] = highProb
+                    highest['normProb'] = normProb
+    logging.debug(count, 'done. results:', highest)
+    return highest
 
-    return new_strat
-
-def myStrategy(myscore, theirscore, last):
-    #your code here
-    return ___
-
-manyGames(strat2.create(False), pr1testing.test7, 1)
-# pr1testing.testStrat(strat2.create(True), 2)
+pool = Pool()
+results = pool.map(mutateToTenths, [1,2,3,4])
+logging.debug('the verdict is: ', results)
+# pr1testing.testStrat(strat2_mutatable.create(56, 0.79, 0.8), 10000)
