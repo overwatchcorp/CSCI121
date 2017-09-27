@@ -1,9 +1,7 @@
-import random
-import math
 import pr1testing
 import myStrat1 
 import strat2_mutatable
-random.seed()
+import strat2
 
 # CSCI 121 Fall 2017
 # 
@@ -93,6 +91,8 @@ def play():
         return 3
 
 def rollMany(n):
+    # function that reduces reptition.
+    # takes loop from play() and takes parameter for number of die, returns the total points for that roll
     diceTotal = 0
     diceString = ""
     i = n
@@ -104,6 +104,8 @@ def rollMany(n):
     return diceTotal
 
 def autoplayLoud(strat1, strat2):
+    # verbose function that prints progress to console each turn
+    # useful for debugging
     gameOver = False
     score = {}
     score[1] = 0
@@ -111,7 +113,8 @@ def autoplayLoud(strat1, strat2):
     whoseTurn = 1
     isLast = False
     while gameOver != True:
-        # print('it\'s player ', whoseTurn, '\'s turn. their score is ', score[whoseTurn]) 
+        print('it\'s player ', whoseTurn, '\'s turn. their score is ', score[whoseTurn]) 
+        # dieCount and thisTotal are re-assigned between player 1 and player 2's turn
         dieCount = None
         thisTotal = None
         dieCount = strat1(score[1], score[2], isLast)
@@ -140,6 +143,7 @@ def autoplayLoud(strat1, strat2):
     return score 
 
 def autoplay(strat1, strat2):
+    # functionally identical to autoplayLoud, without prints
     gameOver = False
     score = {}
     score[1] = 0
@@ -166,6 +170,9 @@ def autoplay(strat1, strat2):
     return score
 
 def manyGames(strat1, strat2, n):
+    # victories[1]: player 1 victories
+    # victories[2]: player 2 victories
+    # victories[3]: ties
     victories = {}
     victories[1] = 0
     victories[2] = 0
@@ -182,68 +189,139 @@ def manyGames(strat1, strat2, n):
             victories[2] += 1
         else:
             victories[3] += 1
+    print('Player 1 Wins: ', victories[1])
+    print('Player 2 Wins: ', victories[2])
+    print('Ties: ', victories[3])
     # print(victories)
-    if victories[1] > victories[2]:
-        print('player 1 win')
-    # elif victories[1] == victories[2]:
-        # print('tie')
+    # if victories[1] > victories[2]:
+    #     print('player 1 win')
+    # # elif victories[1] == victories[2]:
+    #     print('tie')
     # else:
-        # print('player 2 win')
+    #     print('player 2 win')
     return victories
 
-# lastProb = 0
-# lastAction = 'add'
-# highThresh = 0
-# highProb = 0.0
-# normProb = 0.8
-# prevResults = manyGames(strat2_mutatable.create(highThresh, highProb, normProb), pr1testing.test11, 1000)
-# highest = 0
-# while True:
-#     for x in range(1, 95):
-#         for y in range(1, 100):
-#             highThresh = x
-#             highProb = y / 100
-#             results = manyGames(strat2_mutatable.create(highThresh, highProb, normProb), pr1testing.test11, 1000)
+def strategy1(risk, verbose):
+    '''
+    returns function that can be used to play risk
+    strategy1 takes 2 paramters
+    risk, float, % of times, on average, strat should overshoot 100 (risk of overshooting)
+    verbose, boolean, if true strategy will print actions to console
+    '''
+    def play(myScore, theirScore, isLast):
+        remainingScore = 100 - myScore
+        print('remaining: ', remainingScore) if verbose == True else None
+        # cap is the hgihest number of die that one could roll, given the mean of the die
+        cap = int(remainingScore / dieMean)
+        # we init maxSafe with the highest number of die, but we will deincrement until a safe number is found
+        maxSafe = cap
+        searching = True
+        currentRisk = risk
+        if theirScore > 95:
+             currentRisk += risk * 10
+        while searching:
+            check = maxSafe
+            mean = dieMean * check
+            deviation = numpy.sqrt(dieVariance * check)
+            zScore = (remainingScore - mean) / deviation
+            overshootOdds = norm.sf(zScore)
+            print('checked: ', check, ' overshoot prob: ', overshootOdds, zScore) if verbose == True else None
+            if overshootOdds < currentRisk:
+                maxSafe = check
+                searching = False
+            else:
+                maxSafe -= 1
+            if maxSafe <= 0:
+                break
+        return maxSafe
+    return play
+
+def improve(strat):
+    def better_strat(myScore, theirScore, isLast):
+        # adding a function that made one last move if the opponent was bound to win was simple, but very effective and boosted my wins ~10% in some instances.
+        if myscore < thierScore and myScore > 95:
+            return 1
+        return strat(myScore, theirScore, isLast)
+    return better_strat
+
+
+dieMean = 2.5
+dieVariance = 2.9166666666667
+
+def myStrategy(myScore, theirScore, isLast):
+    '''
+    magically, this strategy works a lot better
+    if my score is less than 70, divide the remaining score (100 - myScore) by the mean of a die roll and multiply by a multiplier (chosen mildly randomly--I just fiddled around with the numbers for a while
+    if my score is more than 70, do the same thing but use a slightly lower multiplyer
+    if my score is less than my opponent's score AND my score is greater than 95, roll 1 die
+    '''
+    remainingScore = 100 - myScore
+    if theirScore > myScore and myScore > 95:
+        return 1
+    if myScore < 70:
+        return int(remainingScore / dieMean * 0.86)
+    return int(remainingScore / dieMean * 0.80) 
+
+# pr1testing.testStrat(myStrategy, 10000)
+
+'''
+Strategy "Beat 11 at All Costs"
+------------------------------
+the following commented out code block is a script to attempt to brute force the optimal variables to beat test 11, the only test I couldn't beat with my strategy.
+it is three nested for loops. from upper to inner:
+    1. goes from integers start to stop. integer values are calculated by dividing 100 by the number of threads the computer has. we create a range of intergers to iterate over for eacth threads. ex on a 4 core machine, 0-25, 26-50, 51-75, 75-100. it does go into the negatives but this was a bit of a rush-job so it's not pefect. 
+    this interger is the percent through 100 that the game switches from the early to late game multiplier
+    2. go from .5 to .9, with steps of 0.01. this is to attempt to find the best 'early multiplier,' the multiplier used in the first (about) half of the game
+    3. go from .5 to .9, with steps of 0.01. this is to find the late game multiplier
+
+    inside loop 3, the script plays a number of games against strategy 11, using the for loop values as the parameters. 
+    if the paramaters are score a higher number of wins than previous stratagies, the paramaters are written to the "highest" object
+    at the end the highest object is returned
+
+this process happens as many times as there are threads on the system.
+running on a 12 core machine, I think this would have finished in about eight hours. I did beat stratagy 11 a few times, but I couldn't replicate it :)
+'''
+
+# def create(highThresh, highProb, normProb):
+#     def strategy(myScore, theirScore, isLast):
+#         remainingScore = 100 - myScore
+#         if theirScore > myScore and myScore > 95:
+#             return 1
+#         if myScore < highThresh:
+#             return int(remainingScore / dieMean * highProb)
+#         return int(remainingScore / dieMean * normProb) 
+#     return strategy
+# import multiprocessing
+# from multiprocessing import Pool
+# import logging
+# import time
 # 
-#             if results[1] > highest:
-#                 print(results[1], highThresh, highProb, normProb)
-#                 highest = results[1]
-#             if results[1] > results[2]:
-#                 print('BAMMM', highThresh, highProb, normProb)
-#                 break
-#         print('completed ', x, ' numerspace')
+# threads = multiprocessing.cpu_count()
 # 
-import multiprocessing
-from multiprocessing import Pool
-import logging
-import time
+# logging.basicConfig(filename= 'logs/' + str(time.time()) + '.log',level=logging.DEBUG)
+# 
+# def mutateToTenths(count):
+#     start = int((100 / threads) * (count - 1))
+#     stop = int((100 / threads) * count)
+#     highest = {}
+#     highest['score'] = 0
+#     for x in range(start, stop):
+#         for y in range(50, 90):
+#             for z in range(50, 90):
+#                 highThresh = x
+#                 highProb = y / 100
+#                 normProb = z / 100
+#                 results = manyGames(create(highThresh, highProb, normProb), pr1testing.test11, 10000)
+#                 if results[1] > highest['score']:
+#                     logging.debug(highest)
+#                     highest['score'] = results[1]
+#                     highest['highThresh'] = highThresh
+#                     highest['highProb'] = highProb
+#                     highest['normProb'] = normProb
+#     logging.debug(count, 'done. results:', highest)
+#     return highest
+# 
+# pool = Pool()
+# results = pool.map(mutateToTenths, [1,2,3,4])
+# logging.debug('the verdict is: ', results)
 
-threads = multiprocessing.cpu_count()
-
-logging.basicConfig(filename= 'logs/' + str(time.time()) + '.log',level=logging.DEBUG)
-
-def mutateToTenths(count):
-    start = int((100 / threads) * (count - 1))
-    stop = int((100 / threads) * count)
-    highest = {}
-    highest['score'] = 0
-    for x in range(start, stop):
-        for y in range(50, 90):
-            for z in range(50, 90):
-                highThresh = x
-                highProb = y / 100
-                normProb = z / 100
-                results = manyGames(strat2_mutatable.create(highThresh, highProb, normProb), pr1testing.test11, 10000)
-                if results[1] > highest['score']:
-                    logging.debug(highest)
-                    highest['score'] = results[1]
-                    highest['highThresh'] = highThresh
-                    highest['highProb'] = highProb
-                    highest['normProb'] = normProb
-    logging.debug(count, 'done. results:', highest)
-    return highest
-
-pool = Pool()
-results = pool.map(mutateToTenths, [1,2,3,4])
-logging.debug('the verdict is: ', results)
-# pr1testing.testStrat(strat2_mutatable.create(56, 0.79, 0.8), 10000)
