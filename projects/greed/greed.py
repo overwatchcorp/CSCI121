@@ -264,7 +264,7 @@ def myStrategy(myScore, theirScore, isLast):
         return int(remainingScore / dieMean * 0.86)
     return int(remainingScore / dieMean * 0.80) 
 
-# pr1testing.testStrat(myStrategy, 10000)
+pr1testing.testStrat(myStrategy, 10000)
 
 '''
 Strategy "Beat 11 at All Costs"

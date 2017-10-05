@@ -8,7 +8,7 @@ if my score is less than 70, divide the remaining score (100 - myScore) by the m
 if my score is more than 70, do the same thing but use a slightly lower multiplyer
 if my score is less than my opponent's score AND my score is greater than 95, roll 1 die
 '''
-def strategy(myScore, theirScore, isLast):
+def myStrategy(myScore, theirScore, isLast):
     remainingScore = 100 - myScore
     if theirScore > myScore and myScore > 95:
         return 1
