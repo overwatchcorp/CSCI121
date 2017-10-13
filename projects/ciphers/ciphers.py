@@ -262,9 +262,6 @@ def count_trigrams(s):
                 trigrams[trigram] = 1
     return trigrams
 
-hitch = file_to_string('hitchhikers.txt')
-simpleHitch = simplify_string(hitch)
-
 # Uncomment the code below once the functions above are complete
 english_trigrams = count_trigrams(simplify_string(file_to_string("twocities_full.txt")))
 normalize(english_trigrams)
@@ -289,6 +286,7 @@ def trigram_score(s, english_trigrams):
             score += math.log(english_trigrams[t])
     return score
 
+# swaps two indexes in the key array
 def swapTwo(k):
     newK = k
     first = random.randint(0, 25)
@@ -297,12 +295,16 @@ def swapTwo(k):
     return newK
 
 def sub_break(cipher, english_trigrams):
+    # randomly generate a key
     randKey = sub_gen_key()
+    # each time a key with less loss is found, store it
     bestKey = randKey
     decAttempt = sub_dec(cipher, randKey)
     decScore = trigram_score(decAttempt, english_trigrams)
     bestScore = decScore
     nSinceImprovement = 0
+    # swap two indexes each time
+    # if no improvement is found for 1000 swaps, finish
     while nSinceImprovement <= 1000:
         tryKey = swapTwo(randKey[:])
         decAttempt = sub_dec(cipher, tryKey)
@@ -316,6 +318,4 @@ def sub_break(cipher, english_trigrams):
     decrypted = sub_dec(cipher, randKey)
     return (bestKey, decrypted)
 
-mystery = file_to_string('mystery3.txt')
-print(sub_break(mystery, english_trigrams))
 
