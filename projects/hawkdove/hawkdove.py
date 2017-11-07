@@ -1,6 +1,5 @@
 import random
 import tkinter
-import time
 random.seed()
 
 def plot(xvals, yvals):
