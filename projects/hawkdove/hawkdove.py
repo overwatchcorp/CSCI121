@@ -38,6 +38,92 @@ init_evolving  = 0
 ########
 # Your code here
 ########
+class World:
+    def __init__ (self):
+        self.birds = []
+    def update (self):
+        [bird.update() for bird in self.birds ]
+    def free_food (self, n):
+        [ self.birds[random.randint(0, len(self.birds))].eat() for x in range(0, n) ]
+
+class Bird:
+    def __init__ (self, world):
+        self.health = 100
+        self.world = world
+        world.birds.append(self)
+    def eat (self):
+        self.health += foodbenefit
+    def injured (self):
+        self.health -= injurycost
+    def display (self):
+        self.health -=  displaycost
+    def die (self):
+        self.world.birds.remove(self)
+    def update (self):
+        # health lost to burning calories
+        self.health -= 1
+        if self.health <= 0:
+            self.die()
+
+def birdUpdate(self):
+    Bird.update(self)
+    if self.health >= 200:
+        self.health -= 100
+        return True
+
+def randomEat(self, other):
+    self.display()
+    other.display()
+    randomBird = random.randint(0, 1)
+    if randomBird == 1:
+        self.eat()
+    else:
+        other.eat()
+    return randomBird
+
+class Hawk (Bird):
+    species = 'Hawk'
+    def update (self):
+        shouldReplicate = birdUpdate(self)
+        if shouldReplicate == True:
+            self.world.birds.append(Hawk(self.world))
+    def defend_choice (self):
+        return True
+    def encounter (self, other):
+        othersAction = other.defend_choice()
+        myAction = self.defend_choice()
+        if othersAction == False and myAction == False:
+            randomEat(self, other)
+        elif othersAction == True and myAction == True):
+            # same as if neither defends, but they fight
+            winner = randomEat(self, other)
+            # if winner == 1, self eats, other looses
+            # else other eats, self looses
+            if winner == 1:
+                other.injured()
+            else:
+                self.injured()
+        elif myAction == True:
+            self.eat()
+        else:
+            other.eat()
+
+class Dove (Bird):
+    species = 'Dove'
+    def update (self):
+        shouldReplicate = birdUpdate(self)
+        if shouldReplicate == True:
+            self.world.birds.append(Dove(self.world))
+    def defend_choice (self):
+        return False
+    def encounter (self, other):
+        othersAction = other.defend_choice()
+        myAction = self.defend_choice()
+        if othersAction == True:
+            other.eat()
+        # we can use else, since a dove will always choose False
+        else:
+            randomEat(self, other)
 
 
 ########
